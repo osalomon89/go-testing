@@ -94,7 +94,7 @@ func Test_itemService_CreateItem(t *testing.T) {
 }
 
 func Test_itemService_GetItemByID(t *testing.T) { //Casos de prueba
-	assert := assert.New()
+	assert := assert.New(t)
 	tabla := []struct {
 		name      string
 		id        uint
