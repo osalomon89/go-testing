@@ -44,7 +44,7 @@ func (svc *itemService) GetItemByID(id uint) error {
 
 	err := svc.repo.GetItemByID(id)
 	if err != nil {
-		return fmt.Errorf("error in repository: %w", err)
+		return fmt.Errorf("error in repository")
 	}
 
 	return nil

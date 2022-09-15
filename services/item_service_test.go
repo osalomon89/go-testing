@@ -92,3 +92,57 @@ func Test_itemService_CreateItem(t *testing.T) {
 		})
 	}
 }
+
+func Test_itemService_GetItemByID(t *testing.T) { //Casos de prueba
+	assert := assert.New()
+	tabla := []struct {
+		name      string
+		id        uint
+		wantedErr error
+		repoTimes int
+		repoError error
+	}{
+		{
+			name:      "Esto no Funciona",
+			id:        0,
+			wantedErr: fmt.Errorf("item id cannot be zero"),
+			repoTimes: 0,
+			repoError: nil,
+		},
+		{
+			name:      "Funciona",
+			id:        1,
+			wantedErr: nil,
+			repoTimes: 0,
+			repoError: nil,
+		},
+		{
+			name:      "no encuentra el item",
+			id:        100,
+			wantedErr: fmt.Errorf("error in repository"),
+			repoTimes: 1,
+			repoError: errors.New("Error en el repositorio"),
+		},
+	}
+	for _, tt := range tabla { //Logica de negocio
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish() //defer -> si algo que no controlaste me explota en el medio el finish se va ejecutar
+			repositoryMock := mocks.NewMockItemRepository(ctrl)
+
+			//Hacemos un mock
+			repositoryMock.EXPECT().GetItemByID(tt.id).Return(nil).Times(tt.repoTimes)
+
+			err := services.NewItemService(repositoryMock).GetItemByID(tt.id)
+
+			if tt.wantedErr != nil {
+				assert.NotNil(err)
+				assert.Equal(tt.wantedErr.Error(), err.Error(), "Error message is not the expected")
+				return
+			}
+			assert.Nil(err)
+
+		})
+	}
+
+}
