@@ -8,6 +8,7 @@ import (
 
 type ItemService interface {
 	CreateItem(name string, stock int) error
+	GetItemByID(id uint) error
 }
 
 type itemService struct {
@@ -44,7 +45,7 @@ func (svc *itemService) GetItemByID(id uint) error {
 
 	err := svc.repo.GetItemByID(id)
 	if err != nil {
-		return fmt.Errorf("error in repository: %w", err)
+		return fmt.Errorf("error in repository: ")
 	}
 
 	return nil
