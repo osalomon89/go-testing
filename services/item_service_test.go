@@ -7,9 +7,66 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/osalomon89/go-testing/mocks"
+	"github.com/osalomon89/go-testing/repositories"
 	"github.com/osalomon89/go-testing/services"
 	"github.com/stretchr/testify/assert"
 )
+
+type itemRepositoryMock struct {
+	err error
+}
+
+func (repo itemRepositoryMock) SaveItem(name string, stock int) error {
+	return repo.err
+}
+
+func (repo itemRepositoryMock) GetItemByID(itemID uint) error {
+	return repo.err
+}
+
+func Test_itemService_CreateItemManual(t *testing.T) {
+	type args struct {
+		name  string
+		stock int
+	}
+
+	tests := []struct {
+		name    string
+		repo    repositories.ItemRepository
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "Should works correctly",
+			repo: itemRepositoryMock{
+				err: nil,
+			},
+			args: args{
+				name:  "tablet",
+				stock: 12,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Should return error when name attribute is empty",
+			args: args{
+				name:  "",
+				stock: 12,
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svc := services.NewItemService(tt.repo)
+			err := svc.CreateItem(tt.args.name, tt.args.stock)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("itemService.CreateItem() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
 
 func Test_itemService_CreateItem(t *testing.T) {
 	assert := assert.New(t)
